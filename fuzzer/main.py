@@ -1,8 +1,10 @@
+#!/bin/python3
 import random
 import multiprocessing
 import argparse
 from pathlib import Path
 from scapy.all import *
+from prettytable import PrettyTable
 
 from apids import APID_NAMES
 
@@ -130,14 +132,6 @@ class fuzzer(object):
     def __init__(self, conn, mutationSteps):
         self.conn = conn
         self.mutationSteps = mutationSteps
-        self.modifiableHeaderFields = [
-            "version", 
-            "pkttype",
-            "has_sec_header",
-            "apid",
-            "segm_flags",
-            "seq_count",
-        ]
 
     def random_with_N_digits(self, n):
         range_start = 10**(n-1)
@@ -147,12 +141,26 @@ class fuzzer(object):
     def begin(self):
         for step in range(self.mutationSteps):
             packet = CCSDSPacket()
-            for header in self.modifiableHeaderFields:
+            for header in fuzzableFields:
                 packet[header] = self.random_with_N_digits(step)
                 client.push(CCSDSPacket())
 
+fuzzableFields = [
+    "version", 
+    "pkttype",
+    "has_sec_header",
+    "apid",
+    "segm_flags",
+    "seq_count",
+]
 
-parser = argparse.ArgumentParser()
+print("Supported Fields:")
+t = PrettyTable(['Header Field'])
+
+for f in fuzzableFields:
+    t.add_row([f])
+print(t)
+parser = argparse.ArgumentParser(description="Fuzzes CCSDS Space Packet Protocol header.")
 parser.add_argument('-x', '--unix', type=Path,
                        help='Communicate to a UNIX socket to communicate', required=True)
 args = parser.parse_args()
