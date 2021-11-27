@@ -139,7 +139,7 @@ class fuzzer(object):
         return random.randint(range_start, range_end)
 
     def begin(self):
-        for step in range(self.mutationSteps):
+        for step in range(1, self.mutationSteps):
             packet = CCSDSPacket()
             for header in fuzzableFields:
                 packet[header] = self.random_with_N_digits(step)
