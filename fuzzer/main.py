@@ -165,5 +165,5 @@ parser.add_argument('-x', '--unix', type=Path,
                        help='Communicate to a UNIX socket to communicate', required=True)
 args = parser.parse_args()
 client = UnixStreamSourceSink(str(args.unix), name="client")
-f = fuzzer(client, 5000)
+f = fuzzer(client, 11)
 f.begin()
